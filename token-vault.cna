@@ -61,7 +61,7 @@ alias token-vault {
                     $1,
                     '"'.$pid_fmt.'"',
                     2,
-                    $vaultid,
+                    ($vaultid & 4294967295), # For some reason, sleep doesn't like 0xFFFFFFFF
                     ($vaultid >> 32),
                     size(@pids)
                 ),
@@ -76,28 +76,28 @@ alias token-vault {
         # <i:command id> <i:vault address low> <i:vault address high>
         $vaultid = get_token_vault($1, $3);
         if($vaultid == $null) {return;}
-        $args = bof_pack($1, "iii", 3, $vaultid, $vaultid >> 32);
+        $args = bof_pack($1, "iii", 3, $vaultid & 4294967295, $vaultid >> 32);
     }
     else if($command eq "use")
     {
         # <i:command id> <i:vault address low> <i:vault address high> <s: pid>
         $vaultid = get_token_vault($1, $4);
         if($vaultid == $null) {return;}
-        $args = bof_pack($1, "iiis", 4, $vaultid, $vaultid >> 32, $3);
+        $args = bof_pack($1, "iiis", 4, $vaultid & 4294967295, $vaultid >> 32, $3);
     }
     else if($command eq "remove")
     {
         # <i:command id> <i:vault address low> <i:vault address high> <s: pid>
         $vaultid = get_token_vault($1, $4);
         if($vaultid == $null) {return;}
-        $args = bof_pack($1, "iiis", 5, $vaultid, $vaultid >> 32, $3);
+        $args = bof_pack($1, "iiis", 5, $vaultid & 4294967295, $vaultid >> 32, $3);
     }
     else if($command eq "remove-all")
     {
         # <i:command id> <i:vault address low> <i:vault address high>
         $vaultid = get_token_vault($1, $3);
         if($vaultid == $null) {return;}
-        $args = bof_pack($1, "iii", 6, $vaultid, $vaultid >> 32);
+        $args = bof_pack($1, "iii", 6, $vaultid & 4294967295, $vaultid >> 32);
     }
     else {
         berror($1, "Unkown command: " . $command);
